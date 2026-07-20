@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carlsbad Chinese Club (CCC) - 聖地亞哥北郡華人協會</title>
+  
+  <!-- Production-optimized React 18 CDN Builds (Minified & Fast) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <!-- Modern Tailwind CSS Implementation -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .hero-bg { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #1d4ed8 100%); }
+    input:focus, select:focus, textarea:focus { outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4); }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+<div id="root"></div>
+
+<script type="text/javascript">
+const { useState, useEffect, createElement: h } = React;
+
+/* ── Inline SVG Icons ── */
+const Icon = ({ d, className = "w-6 h-6", strokeWidth = 2 }) => (
+  h('svg', {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    className
+  }, d)
+);
+
+const Icons = {
+  Users: h(Icon, { d: h(React.Fragment, null, h('path', { d: "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" }), h('circle', { cx: "9", cy: "7", r: "4" }), h('path', { d: "M23 21v-2a4 4 0 0 0-3-3.87" }), h('path', { d: "M16 3.13a4 4 0 0 1 0 7.75" })) }),
+  Map: h(Icon, { d: h(React.Fragment, null, h('polygon', { points: "3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" }), h('line', { x1: "9", y1: "3", x2: "9", y2: "18" }), h('line', { x1: "15", y1: "6", x2: "15", y2: "21" })) }),
+  Music: h(Icon, { d: h(React.Fragment, null, h('path', { d: "M9 18V5l12-2v13" }), h('circle', { cx: "6", cy: "18", r: "3" }), h('circle', { cx: "18", cy: "16", r: "3" })) }),
+  Trophy: h(Icon, { d: h(React.Fragment, null, h('path', { d: "M6 9H4.5a2.5 2.5 0 0 1 0-5H6" }), h('path', { d: "M18 9h1.5a2.5 2.5 0 0 0 0-5H18" }), h('path', { d: "M4 22h16" }), h('path', { d: "M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" }), h('path', { d: "M14 14.66V17c0 .55'.47.98.97 1.21C16.15 18.75 17 20.24 17 22" }), h('path', { d: "M18 2H6v7a6 6 0 0 0 12 0V2z" })) }),
+  Calendar: h(Icon, { d: h(React.Fragment, null, h('rect', { x: "3", y: "4", width: "18", height: "18", rx: "2", ry: "2" }), h('line', { x1: "16", y1: "2", x2: "16", y2: "6" }), h('line', { x1: "8", y1: "2", x2: "8", y2: "6" }), h('line', { x1: "3", y1: "10", x2: "21", y2: "10" })) }),
+  Camera: h(Icon, { d: h(React.Fragment, null, h('path', { d: "M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" }), h('circle', { cx: "12", cy: "13", r: "4" })) }),
+  Mail: h(Icon, { d: h(React.Fragment, null, h('path', { d: "M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" }), h('polyline', { points: "22,6 12,13 2,6" })) }),
+  Menu: h(Icon, { d: h(React.Fragment, null, h('line', { x1: "3", y1: "12", x2: "21", y2: "12" }), h('line', { x1: "3", y1: "6", x2: "21", y2: "6" }), h('line', { x1: "3", y1: "18", x2: "21", y2: "18" })) }),
+  X: h(Icon, { d: h(React.Fragment, null, h('line', { x1: "18", y1: "6", x2: "6", y2: "18" }), h('line', { x1: "6", y1: "6", x2: "18", y2: "18" })) }),
+  ChevronRight: h(Icon, { d: h('polyline', { points: "9 18 15 12 9 6" }) }),
+  MapPin: h(Icon, { d: h(React.Fragment, null, h('path', { d: "M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" }), h('circle', { cx: "12", cy: "10", r: "3" })) }),
+};
+
+/* ── Static Context Data ── */
+const GROUPS = [
+  {
+    title: "Hiking Group / 登山組",
+    icon: Icons.Map,
+    iconColor: "text-emerald-600 bg-emerald-50",
+    description: "Explore local trails in San Diego North County every Saturday morning. / 每週六上午探索聖地亞哥北郡當地步道，歡迎各種體能程度的成員參加！",
+    image: "https://images.unsplash.com/photo-1551632432-c735e7a030bc?auto=format&fit=crop&q=80&w=800",
+    schedule: "Every Saturday · 8:00 AM",
+    members: "28 active members",
+  },
+  {
+    title: "Folk Dance Club / 民族舞蹈俱樂部",
+    icon: Icons.Music,
+    iconColor: "text-pink-600 bg-pink-50",
+    description: "Weekly folk dance classes at Carlsbad. Celebrate diverse cultures through movement! / 在卡爾斯巴德舉行的每週民族舞蹈課程。透過舞蹈慶祝多元文化！",
+    image: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&q=80&w=800",
+    schedule: "Every Wednesday · 10:00 AM",
+    members: "35 active members",
+  },
+  {
+    title: "Pickleball Group / 皮克球組",
+    icon: Icons.Trophy,
+    iconColor: "text-amber-600 bg-amber-50",
+    description: "The fastest growing sport in our North County community! Fun, competitive, and social. / 我們北郡社區發展最快的運動！充滿樂趣與社交交互。",
+    image: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=800",
+    schedule: "Tue & Thu · 9:00 AM",
+    members: "42 active members",
+  },
+];
+
+const ALBUMS = [
+  { title: "Spring Gathering 2026", zhTitle: "2026春季聚會", date: "March 2026", type: "Photos", cover: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&q=70&w=600", link: "#" },
+  { title: "Lunar New Year Gala", zhTitle: "新春慶典晚會", date: "February 2026", type: "Video", cover: "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&q=70&w=600", link: "#" },
+  { title: "Community Dinner", zhTitle: "社區晚宴", date: "January 2026", type: "Photos", cover: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&q=70&w=600", link: "#" },
+  { title: "Hiking Trail Day", zhTitle: "冬季登山日", date: "November 2025", type: "Photos", cover: "https://images.unsplash.com/photo-1551632432-c735e7a030bc?auto=format&fit=crop&q=70&w=600", link: "#" },
+];
+
+/* ── UI Sub-components ── */
+const NavItem = ({ name, zhName, id, currentPage, setCurrentPage, setIsMenuOpen }) => {
+  const isActive = currentPage === id;
+  return h('button', {
+    onClick: () => { setCurrentPage(id); setIsMenuOpen(false); },
+    className: `px-4 py-2 text-left font-medium flex flex-col items-start md:items-center transition-all rounded-xl w-full md:w-auto ${
+      isActive ? 'text-blue-600 bg-blue-50/80 font-semibold' : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'
+    }`
+  }, [
+    h('span', { key: 'en', className: "text-sm" }, name),
+    h('span', { key: 'zh', className: "text-xs opacity-75 hidden md:inline" }, zhName)
+  ]);
+};
+
+/* ── Pages ── */
+const HomePage = ({ setCurrentPage }) => {
+  return h('div', { className: "fade-in" }, [
+    // Hero Section
+    h('section', { key: 'hero', className: "hero-bg text-white py-24 px-4 text-center relative overflow-hidden" }, [
+      h('div', { className: "max-w-4xl mx-auto relative z-10" }, [
+        h('span', { className: "bg-blue-500/30 text-blue-200 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full backdrop-blur-sm border border-blue-400/20" }, "Welcome to Carlsbad Chinese Club"),
+        h('h1', { className: "text-4xl md:text-6xl font-black tracking-tight mt-6 leading-tight" }, "Connecting Community, Sharing Cultures"),
+        h('p', { className: "text-3xl md:text-4xl font-medium text-blue-100 mt-2 font-serif" }, "聖地亞哥北郡華人協會"),
+        h('p', { className: "text-base md:text-xl text-slate-300 max-w-2xl mx-auto mt-6 leading-relaxed" }, "Bringing individuals and families together across San Diego North County through recreation, regular physical activity, and meaningful cross-cultural exchange."),
+        h('div', { className: "mt-10 flex flex-wrap gap-4 justify-center" }, [
+          h('button', { onClick: () => setCurrentPage('contact'), className: "bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-4 rounded-xl shadow-xl transition-all hover:-translate-y-0.5" }, "Join Association / 申請加入"),
+          h('button', { onClick: () => setCurrentPage('groups'), className: "bg-white/10 hover:bg-white/20 text-white font-semibold px-8 py-4 rounded-xl backdrop-blur-sm border border-white/10 transition-all" }, "Explore Groups / 瀏覽小組")
+        ])
+      ])
+    ]),
+    
+    // Quick Summary Section
+    h('section', { key: 'summary', className: "max-w-6xl mx-auto px-4 py-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-center" }, [
+      h('div', { className: "bg-white p-8 rounded-2xl shadow-sm border border-slate-100" }, [
+        h('div', { className: "mx-auto w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 mb-4" }, Icons.Users),
+        h('h3', { className: "text-xl font-bold mb-2" }, "Active Fellowship"),
+        h('p', { className: "text-slate-600 text-sm leading-relaxed" }, "A warm, inclusive space for local families and professionals to network, socialize, and build lasting friendships.")
+      ]),
+      h('div', { className: "bg-white p-8 rounded-2xl shadow-sm border border-slate-100" }, [
+        h('div', { className: "mx-auto w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 mb-4" }, Icons.Map),
+        h('h3', { className: "text-xl font-bold mb-2" }, "Weekly Activities"),
+        h('p', { className: "text-slate-600 text-sm leading-relaxed" }, "From natural trail exploration to high-energy pickleball match sessions, we support healthy, balanced community lifestyles.")
+      ]),
+      h('div', { className: "bg-white p-8 rounded-2xl shadow-sm border border-slate-100" }, [
+        h('div', { className: "mx-auto w-12 h-12 bg-pink-50 rounded-xl flex items-center justify-center text-pink-600 mb-4" }, Icons.Music),
+        h('h3', { className: "text-xl font-bold mb-2" }, "Heritage & Arts"),
+        h('p', { className: "text-slate-600 text-sm leading-relaxed" }, "Preserving and displaying cultural heritage traditions through regular musical training, folk dancing, and public festivals.")
+      ])
+    ])
+  ]);
+};
+
+const GroupsPage = ({ setCurrentPage }) => {
+  return h('div', { className: "max-w-6xl mx-auto px-4 py-12 fade-in" }, [
+    h('div', { key: 'head', className: "mb-12 border-b border-slate-200 pb-6" }, [
+      h('h2', { className: "text-3xl font-black tracking-tight" }, "Special Interest Groups / Featured Clubs"),
+      h('p', { className: "text-slate-500 mt-2" }, "Find your passion and stay healthy alongside fellow community members.")
+    ]),
+    h('div', { key: 'grid', className: "grid grid-cols-1 lg:grid-cols-3 gap-8" }, GROUPS.map((g, idx) => 
+      h('div', { key: idx, className: "bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden flex flex-col justify-between" }, [
+        h('div', null, [
+          h('div', { className: "relative h-48 bg-slate-100" }, [
+            h('img', { src: g.image, alt: g.title, className: "w-full h-full object-cover" }),
+            h('div', { className: "absolute top-4 left-4 p-3 rounded-xl shadow-md backdrop-blur-md bg-white/90" }, g.icon)
+          ]),
+          h('div', { className: "p-6" }, [
+            h('h3', { className: "text-xl font-bold tracking-tight text-slate-900" }, g.title),
+            h('p', { className: "text-sm text-slate-600 mt-4 leading-relaxed" }, g.description)
+          ])
+        ]),
+        h('div', { className: "p-6 pt-0" }, [
+          h('div', { className: "border-t border-slate-100 pt-4 mb-4 flex justify-between items-center text-xs text-slate-500 font-medium" }, [
+            h('span', { className: "flex items-center gap-1" }, [Icons.Calendar, g.schedule]),
+            h('span', null, g.members)
+          ]),
+          h('button', { onClick: () => setCurrentPage('contact'), className: "w-full bg-slate-50 hover:bg-blue-50 hover:text-blue-600 text-slate-700 font-bold py-3 px-4 rounded-xl transition-colors border border-slate-200/60 flex items-center justify-center gap-2 text-sm" }, [
+            "Request Group Info",
+            h('span', { className: "w-4 h-4" }, Icons.ChevronRight)
+          ])
+        ])
+      ])
+    ))
+  ]);
+};
+
+const GalleryPage = () => {
+  return h('div', { className: "max-w-6xl mx-auto px-4 py-12 fade-in" }, [
+    h('div', { key: 'head', className: "mb-12 border-b border-slate-200 pb-6" }, [
+      h('h2', { className: "text-3xl font-black tracking-tight" }, "Shared Memories / Activity Gallery"),
+      h('p', { className: "text-slate-500 mt-2" }, "A visual look back at our recent historical seasonal celebrations, outdoor excursions, and regular assemblies.")
+    ]),
+    h('div', { key: 'grid', className: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6" }, ALBUMS.map((a, idx) => 
+      h('a', { key: idx, href: a.link, className: "group bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden block hover:shadow-md transition-all" }, [
+        h('div', { className: "h-40 bg-slate-200 relative overflow-hidden" }, [
+          h('img', { src: a.cover, alt: a.title, className: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" }),
+          h('span', { className: "absolute bottom-3 right-3 text-[10px] bg-slate-900/80 text-white font-bold uppercase tracking-wider px-2 py-0.5 rounded backdrop-blur-sm" }, a.type)
+        ]),
+        h('div', { className: "p-4" }, [
+          h('span', { className: "text-[11px] font-semibold text-blue-600 uppercase tracking-wider" }, a.date),
+          h('h4', { className: "font-bold text-slate-900 mt-1 truncate group-hover:text-blue-600 transition-colors" }, a.title),
+          h('p', { className: "text-xs text-slate-500 font-medium font-serif mt-0.5" }, a.zhTitle)
+        ])
+      ])
+    ))
+  ]);
+};
+
+const ContactPage = () => {
+  const [form, setForm] = useState({ name: '', email: '', type: 'individual', interest: 'Hiking Group / 登山小組', message: '' });
+  const [status, setStatus] = useState({ type: '', text: '' });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!form.name.trim() || !form.email.trim()) {
+      setStatus({ type: 'error', text: 'Please complete all required fields marked with an asterisk (*). / 請填寫所有必填欄位。' });
+      return;
+    }
+    // Simulation of a production API call boundary
+    setStatus({ type: 'success', text: 'Thank you for your interest! Our team will get in touch with you shortly. / 諮詢提交成功！我們會儘快聯係您。' });
+    setForm({ name: '', email: '', type: 'individual', interest: 'Hiking Group / 登山小組', message: '' });
+  };
+
+  return h('div', { className: "max-w-4xl mx-auto px-4 py-12 fade-in" }, [
+    h('div', { className: "bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden grid grid-cols-1 md:grid-cols-12" }, [
+      h('div', { className: "md:col-span-5 bg-slate-900 text-white p-8 flex flex-col justify-between relative overflow-hidden" }, [
+        h('div', null, [
+          h('h3', { className: "text-2xl font-black tracking-tight" }, "Connect With Us"),
+          h('p', { className: "text-slate-400 text-sm mt-2 leading-relaxed font-serif" }, "歡迎隨時聯係我們了解更多活動詳情。"),
+          h('div', { className: "space-y-6 mt-10" }, [
+            h('div', { className: "flex items-start gap-3 text-sm text-slate-300" }, [
+              h('div', { className: "text-blue-400 mt-0.5" }, Icons.Mail),
+              h('p', null, [h('strong', { className: "block text-white" }, "Email Address"), "ccc_admin@gmail.com"])
+            ]),
+            h('div', { className: "flex items-start gap-3 text-sm text-slate-300" }, [
+              h('div', { className: "text-blue-400 mt-0.5" }, Icons.MapPin),
+              h('p', null, [h('strong', { className: "block text-white" }, "Primary Assembly Venue"), "Calavera Community Center\n2997 Glasgow Dr, Carlsbad, CA 92010"])
+            ])
+          ])
+        ]),
+        h('div', { className: "mt-12 text-[11px] text-slate-500 border-t border-slate-800 pt-4" }, "Carlsbad Chinese Club · Built for community integration.")
+      ]),
+      
+      h('form', { onSubmit: handleSubmit, className: "md:col-span-7 p-8 space-y-6" }, [
+        h('h3', { className: "text-xl font-bold tracking-tight text-slate-900 border-b border-slate-100 pb-3" }, "Membership Inquiry / 入會與活動諮詢"),
+        
+        status.text && h('div', { 
+          className: `p-4 rounded-xl text-sm font-medium ${status.type === 'success' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-rose-50 text-rose-800 border border-rose-200'}` 
+        }, status.text),
+
+        h('div', { className: "grid grid-cols-1 sm:grid-cols-2 gap-4" }, [
+          h('div', null, [
+            h('label', { className: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2" }, "Your Name / 姓名 *"),
+            h('input', { type: "text", value: form.name, onChange: e => setForm({...form, name: e.target.value}), className: "w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm transition-all focus:bg-white focus:border-blue-500", placeholder: "Full Name" })
+          ]),
+          h('div', null, [
+            h('label', { className: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2" }, "Email Address / 郵箱 *"),
+            h('input', { type: "email", value: form.email, onChange: e => setForm({...form, email: e.target.value}), className: "w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm transition-all focus:bg-white focus:border-blue-500", placeholder: "name@example.com" })
+          ])
+        ]),
+
+        h('div', null, [
+          h('label', { className: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2" }, "Membership Type / 會員類別"),
+          h('div', { className: "grid grid-cols-1 sm:grid-cols-2 gap-3" }, [
+            [['individual', 'Individual ($15) / 個人'], ['couple', 'Couple ($25) / 夫婦']].map(([val, label]) => {
+              const selected = form.type === val;
+              return h('label', { key: val, className: `flex items-center p-3.5 border-2 rounded-xl cursor-pointer transition-all ${selected ? 'border-blue-500 bg-blue-50/50 text-blue-900 font-semibold' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}` }, [
+                h('input', { type: "radio", name: "membership_type", checked: selected, onChange: () => setForm({...form, type: val}), className: "sr-only" }),
+                h('span', { className: `w-4 h-4 rounded-full border-2 mr-3 flex items-center justify-center transition-all ${selected ? 'border-blue-600 bg-blue-600' : 'border-slate-300'}` }, selected && h('span', { className: "w-1.5 h-1.5 bg-white rounded-full" })),
+                h('span', { className: "text-xs" }, label)
+              ]);
+            })
+          ])
+        ]),
+
+        h('div', null, [
+          h('label', { className: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2" }, "Primary Interest / 核心興趣組"),
+          h('div', { className: "relative" }, [
+            h('select', { value: form.interest, onChange: e => setForm({...form, interest: e.target.value}), className: "w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm appearance-none cursor-pointer focus:bg-white focus:border-blue-500" }, [
+              h('option', null, "Hiking Group / 登山小組"),
+              h('option', null, "Folk Dance Club / 民族舞蹈俱樂部"),
+              h('option', null, "Pickleball Group / 皮克球組"),
+              h('option', null, "Educational Talks / 專題講座"),
+              h('option', null, "All Activities / 所有活動")
+            ])
+          ])
+        ]),
+
+        h('div', null, [
+          h('label', { className: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2" }, "Message / 留言附註 (Optional)"),
+          h('textarea', { rows: "3", value: form.message, onChange: e => setForm({...form, message: e.target.value}), className: "w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm resize-none transition-all focus:bg-white focus:border-blue-500", placeholder: "Any specific notes or questions..." })
+        ]),
+
+        h('button', { type: "submit", className: "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-600/15 transition-all hover:-translate-y-0.5 text-sm uppercase tracking-wider" }, "Submit Request / 提交")
+      ])
+    ])
+  ]);
+};
+
+/* ── Shell Entry Core ── */
+const App = () => {
+  const [currentPage, setCurrentPage] = useState('home');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => { window.scrollTo({ top: 0, behavior: 'auto' }); }, [currentPage]);
+
+  const navProps = { currentPage, setCurrentPage, setIsMenuOpen };
+  const navLinks = [
+    { name: "Home", zhName: "首頁", id: "home" },
+    { name: "Groups", zhName: "社團", id: "groups" },
+    { name: "Gallery", zhName: "往期回顧", id: "gallery" },
+    { name: "Contact", zhName: "聯繫我們", id: "contact" },
+  ];
+
+  return h('div', { className: "min-h-screen flex flex-col justify-between bg-slate-50" }, [
+    h('div', null, [
+      // Top Navigation Menu Bar
+      h('nav', { className: "bg-white border-b border-slate-200/80 sticky top-0 z-50 backdrop-blur-md bg-white/95" }, [
+        h('div', { className: "max-w-6xl mx-auto px-4" }, [
+          h('div', { className: "flex justify-between items-center h-20" }, [
+            h('div', { onClick: () => setCurrentPage('home'), className: "flex items-center gap-3 cursor-pointer select-none" }, [
+              h('div', { className: "bg-blue-600 p-2.5 rounded-xl shadow-md shadow-blue-600/10 text-white" }, Icons.Users),
+              h('div', { className: "flex flex-col" }, [
+                h('span', { className: "text-base font-black tracking-tight text-slate-900 uppercase" }, "Carlsbad Chinese Club"),
+                h('span', { className: "text-xs font-bold text-blue-600 tracking-wide font-serif" }, "聖地亞哥北郡華人協會 (CCC)")
+              ])
+            ]),
+            h('div', { className: "hidden md:flex items-center gap-1" }, navLinks.map(l => h(NavItem, { key: l.id, ...l, ...navProps }))),
+            h('button', { onClick: () => setIsMenuOpen(!isMenuOpen), className: "md:hidden p-2.5 text-slate-600 hover:bg-slate-50 rounded-xl border border-slate-200/40" }, isMenuOpen ? Icons.X : Icons.Menu)
+          ])
+        ]),
+        isMenuOpen && h('div', { className: "md:hidden bg-white border-t border-slate-100 p-4 space-y-2 shadow-inner" }, navLinks.map(l => h(NavItem, { key: l.id, ...l, ...navProps })))
+      ]),
+
+      // Runtime Route Switching Viewport
+      h('main', null, [
+        currentPage === 'home'    && h(HomePage, { setCurrentPage }),
+        currentPage === 'groups'  && h(GroupsPage, { setCurrentPage }),
+        currentPage === 'gallery' && h(GalleryPage),
+        currentPage === 'contact' && h(ContactPage)
+      ].filter(Boolean))
+    ]),
+
+    // Global Footer Block
+    h('footer', { className: "bg-slate-900 text-slate-400 py-16 px-4 mt-20 border-t border-slate-800" }, [
+      h('div', { className: "max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12" }, [
+        h('div', null, [
+          h('div', { className: "flex items-center gap-3 mb-6 text-white" }, [
+            h('div', { className: "text-blue-500" }, Icons.Users),
+            h('div', null, [
+              h('p', { className: "text-md font-bold tracking-wider uppercase" }, "Carlsbad Chinese Club"),
+              h('p', { className: "text-xs text-slate-400 font-serif" }, "聖地亞哥北郡華人協會")
+            ])
+          ]),
+          h('p', { className: "text-sm text-slate-400 leading-relaxed" }, [
+            "CCC is dedicated to building structural connections across San Diego North County through recreation, public wellness activities, and close community integration.",
+            h('span', { className: "block mt-4 text-xs text-slate-500" }, "Email Contact: ccc_admin@gmail.com")
+          ])
+        ]),
+        h('div', null, [
+          h('h4', { className: "font-bold mb-6 text-white uppercase tracking-widest text-xs" }, "Navigation Paths / 站點目錄"),
+          h('ul', { className: "space-y-3.5 text-sm font-medium" }, navLinks.map(l => 
+            h('li', { key: l.id, onClick: () => setCurrentPage(l.id), className: "hover:text-blue-400 cursor-pointer transition-colors flex items-center gap-2" }, [
+              h('span', { className: "text-blue-500/80" }, "•"), l.name, "/", h('span', { className: "font-serif text-xs opacity-80" }, l.zhName)
+            ])
+          ))
+        ]),
+        h('div', null, [
+          h('h4', { className: "font-bold mb-6 text-white uppercase tracking-widest text-xs flex items-center gap-2" }, [Icons.MapPin, "Assembly Profile / 聚會資訊"]),
+          h('p', { className: "text-sm text-slate-400 leading-relaxed font-sans" }, [
+            h('strong', { className: "block text-white" }, "Calavera Community Center"),
+            "2997 Glasgow Dr, Carlsbad, CA 92010",
+            h('span', { className: "block font-serif text-xs text-slate-500 mt-1" }, "卡拉維拉社區中心"),
+            h('span', { className: "block mt-4 font-semibold text-slate-300" }, "Every Two Months, Wednesday"),
+            "11:00 AM – 2:00 PM",
+            h('span', { className: "block font-serif text-xs text-slate-500" }, "每雙月週三 11:00 AM – 2:00 PM")
+          ])
+        ])
+      ]),
+      h('div', { className: "max-w-6xl mx-auto mt-12 pt-8 border-t border-slate-800 text-center text-xs text-slate-600 font-medium" }, "© 2026 Carlsbad Chinese Club (CCC). All rights reserved. · 版權所有")
+    ])
+  ]);
+};
+
+// Mount Core Application Build Instance
+const container = document.getElementById('root');
+const root = ReactDOM.createRoot(container);
+root.render(h(App));
+</script>
+</body>
+</html>
